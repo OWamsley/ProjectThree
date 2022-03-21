@@ -52,4 +52,6 @@ public class Process {
     public void setFinishTime(int finishTime){
         this.finishTime = finishTime;
     }
+
+
 }
