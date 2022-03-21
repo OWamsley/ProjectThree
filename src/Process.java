@@ -57,4 +57,8 @@ public class Process {
         this.burstTime = burstTime;
     }
 
+    public void setStartLastBurst(int startLastBurst) {
+        this.startLastBurst = startLastBurst;
+    }
+
 }

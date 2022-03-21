@@ -237,6 +237,7 @@ public class App {
                     System.out.printf("@t=%d, P%d selected for %d units \n" , time, curProcess.getProcessNo(), quantumSize);
                     System.out.printf("@t=%d, context switch %d occurs \n", time, contextSwitchCount);
 
+                    curProcess.setStartExecTime(time);
                     time += quantumSize;
                     contextSwitchCount++;
                 }
@@ -269,6 +270,11 @@ public class App {
             }
 
         }
+        for (Process p : finalProcesses) {
+            p.setStartLastBurst(p.getFinishTime());
+            System.out.println(p);
+        }
+        calculate(finalProcesses);
     }
 
     public static ArrayList<Process> sortByArrival(ArrayList<Process> list){
@@ -332,7 +338,7 @@ public class App {
             respTotal += i;
         }
         int respCount = respTimes.size();
-        float avgResp = respTotal / respCount;
+        float avgResp = (float)respTotal / (float)respCount;
         respString += String.format(") / %d = (%s) / %d = %d / %d = %4.2f", respCount, secondRespString, respCount, respTotal, respCount, avgResp);
         System.out.println(respString);
 
@@ -341,7 +347,7 @@ public class App {
             waitTotal += i;
         }
         int waitCount = waitTimes.size();
-        avgResp = respTotal / respCount;
+        avgResp = (float)respTotal / (float)respCount;
         waitString += String.format(") / %d = (%s) / %d = %d / %d = %4.2f", waitCount, secondWaitString, waitCount, waitTotal, waitCount, avgResp);
         System.out.println(waitString);
     }
