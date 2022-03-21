@@ -49,6 +49,10 @@ public class Process {
         }
     }
 
+    public void setStartLastBurst(int lastBurst){
+        this.startLastBurst = lastBurst;
+    }
+
     public void setFinishTime(int finishTime){
         this.finishTime = finishTime;
     }

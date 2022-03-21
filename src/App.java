@@ -18,7 +18,11 @@ public class App {
 
         ArrayList<Process> sorted = sortByArrival(Processes);
 
+
+        System.out.println("Round Robin");
         app.RR();
+        System.out.println("------------------------- Random");
+        app.randomAlgorithm();
 
     }
 
@@ -224,7 +228,7 @@ public class App {
                         Process thisProcess = new Process(time, quantumSize, i);
                         finalProcesses.add(thisProcess);
 
-
+ 
                         System.out.printf("@t=%d, P%d selected for %d units \n" , time, thisProcess.getProcessNo(), quantumSize);
 
                         
@@ -328,7 +332,7 @@ public class App {
         int respCount = respTimes.size();
         float avgResp = respTotal / respCount;
         respString += String.format(") / %d = (%s) / %d = %d / %d = %4.2f", respCount, secondRespString, respCount, respTotal, respCount, avgResp);
-        System.out.println(respString);
+        System.out.println("Response Time: " + respString);
 
         int waitTotal = 0;
         for(int i : waitTimes){
@@ -337,6 +341,6 @@ public class App {
         int waitCount = waitTimes.size();
         avgResp = respTotal / respCount;
         waitString += String.format(") / %d = (%s) / %d = %d / %d = %4.2f", waitCount, secondWaitString, waitCount, waitTotal, waitCount, avgResp);
-        System.out.println(waitString);
+        System.out.println("Wait Time: " + waitString);
     }
 }
