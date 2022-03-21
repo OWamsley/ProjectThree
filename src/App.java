@@ -18,7 +18,7 @@ public class App {
 
         ArrayList<Process> sorted = sortByArrival(Processes);
 
-        app.sjf();
+        app.RR();
 
     }
 
@@ -145,6 +145,124 @@ public class App {
             time += latency;
         }
         calculate(completed);
+    }
+
+    public void randomAlgorithm () {
+        Random rand = new Random();
+        ArrayList <Process> randomList = new ArrayList<>();
+        ArrayList <Process> copyProcessList = new ArrayList<>();
+
+        int time = 0;
+        int contextSwitchCount = 1;
+        int procLength; 
+        int arrivalTime; 
+        Process curProcess;
+        Process nextProcess;
+        boolean found = false;
+        ArrayList<Process> completed = new ArrayList<Process>();
+
+        for (Process p: Processes) {
+            copyProcessList.add(p);
+        }
+
+        System.out.println();
+
+        while (copyProcessList.size() != 0) {
+
+            
+            int processIndex = rand.nextInt(copyProcessList.size());
+            curProcess = copyProcessList.get(processIndex);
+
+            randomList.add(copyProcessList.get(processIndex));
+            copyProcessList.remove(processIndex);
+
+            arrivalTime = curProcess.getArrivalTime();
+            procLength = curProcess.getBurstTime();
+
+            System.out.printf("@t=%d, P%d selected for %d units \n" , time, curProcess.getProcessNo(), procLength);
+            curProcess.setStartExecTime(time);
+            time += procLength;
+
+            if(copyProcessList.isEmpty()){
+                System.out.printf("Completed in %d seconds\n", time );
+            }
+            else{
+                System.out.printf("@t=%d, context switch %d occurs \n", time, contextSwitchCount);
+            }
+            contextSwitchCount +=1;
+            time += latency;
+        }
+
+        calculate(randomList);
+    }
+
+
+    public void RR () {
+        ArrayList <Process> copyProcessList = new ArrayList<>();
+        ArrayList <Integer> remainingBurstTimes = new ArrayList<>();
+        ArrayList <Process> finalProcesses = new ArrayList<>();
+        ArrayList <Process> waitingTimes = new ArrayList<>();
+
+
+        for (int i = 0; i < Processes.size(); i++) {
+            remainingBurstTimes.add(Processes.get(i).getBurstTime());
+            copyProcessList.add(Processes.get(i));
+            
+        }
+
+        int time = 0;
+        int contextSwitchCount = 1;
+        int procLength; 
+
+        while (true) {
+            boolean done = true;
+
+            for (int i = 0; i < copyProcessList.size(); i++) {
+                if (remainingBurstTimes.get(i) > 0) {
+                    done = false;
+                    if (remainingBurstTimes.get(i) > quantumSize) {
+                        Process thisProcess = new Process(time, quantumSize, i);
+                        finalProcesses.add(thisProcess);
+
+
+                        System.out.printf("@t=%d, P%d selected for %d units \n" , time, thisProcess.getProcessNo(), quantumSize);
+
+                        
+                        System.out.printf("@t=%d, context switch %d occurs \n", time, contextSwitchCount); 
+                        contextSwitchCount ++;
+                        
+                        time += quantumSize;
+                        remainingBurstTimes.set(i, remainingBurstTimes.get(i) - quantumSize);
+
+                    }
+
+                    else {
+
+                        time = time + remainingBurstTimes.get(i);
+                        Process thisProcess = new Process(time, remainingBurstTimes.get(i), i);
+                        finalProcesses.add(thisProcess);
+                        int curBurstTime = remainingBurstTimes.get(i);
+                        System.out.printf("@t=%d, P%d selected for %d units \n" , time, thisProcess.getProcessNo(), curBurstTime);
+
+                        if (i != copyProcessList.size() - 1) {
+                            System.out.printf("@t=%d, context switch %d occurs \n", time, contextSwitchCount); 
+                            contextSwitchCount ++;
+                        }
+                        copyProcessList.get(i).setFinishTime(time);
+                        remainingBurstTimes.set(i, 0);
+
+
+                    }
+                }
+            }
+                
+            if (done == true) {
+                break;
+            }
+
+        }
+
+        calculate(copyProcessList);
     }
 
     public static ArrayList<Process> sortByArrival(ArrayList<Process> list){
