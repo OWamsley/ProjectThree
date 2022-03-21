@@ -250,6 +250,8 @@ public class App {
                         System.out.printf("@t=%d, context switch %d occurs \n", time, contextSwitchCount);
                     }
 
+                    curProcess.setFinishTime(time);
+                    finalProcesses.add(curProcess);
                     curProcess.setBurstTime(0);
                     time += bt;
                     contextSwitchCount++;
