@@ -1,6 +1,9 @@
 import java.util.Scanner;
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.LinkedList;
+import java.util.Queue;
+
 public class App {
 
     public static long seedValue;
@@ -202,12 +205,12 @@ public class App {
         ArrayList <Integer> remainingBurstTimes = new ArrayList<>();
         ArrayList <Process> finalProcesses = new ArrayList<>();
         ArrayList <Process> waitingTimes = new ArrayList<>();
+        Queue<Process> WaitingQueue = new LinkedList<>();
+        Process curProcess;
 
 
-        for (int i = 0; i < Processes.size(); i++) {
-            remainingBurstTimes.add(Processes.get(i).getBurstTime());
-            copyProcessList.add(Processes.get(i));
-            
+        for (Process p : Processes) {
+            copyProcessList.add(p);
         }
 
         int time = 0;
@@ -215,54 +218,55 @@ public class App {
         int procLength; 
 
         while (true) {
-            boolean done = true;
-
+            boolean done = false;
             for (int i = 0; i < copyProcessList.size(); i++) {
-                if (remainingBurstTimes.get(i) > 0) {
-                    done = false;
-                    if (remainingBurstTimes.get(i) > quantumSize) {
-                        Process thisProcess = new Process(time, quantumSize, i);
-                        finalProcesses.add(thisProcess);
+                if (copyProcessList.get(i).getArrivalTime() <= time) {
+                    WaitingQueue.add(copyProcessList.get(i));
+                    copyProcessList.remove(i);
+                }
+            }
+            time ++;
 
+            while (!WaitingQueue.isEmpty()) {
+                
+                curProcess = WaitingQueue.remove();
 
-                        System.out.printf("@t=%d, P%d selected for %d units \n" , time, thisProcess.getProcessNo(), quantumSize);
+                if (curProcess.getBurstTime() > quantumSize) {
+                    curProcess.setBurstTime(curProcess.getBurstTime() - quantumSize);
+                    WaitingQueue.add(curProcess);
+                    System.out.printf("@t=%d, P%d selected for %d units \n" , time, curProcess.getProcessNo(), quantumSize);
+                    System.out.printf("@t=%d, context switch %d occurs \n", time, contextSwitchCount);
 
-                        
-                        System.out.printf("@t=%d, context switch %d occurs \n", time, contextSwitchCount); 
-                        contextSwitchCount ++;
-                        
-                        time += quantumSize;
-                        remainingBurstTimes.set(i, remainingBurstTimes.get(i) - quantumSize);
+                    time += quantumSize;
+                    contextSwitchCount++;
+                }
 
+                else
+                {
+                    int bt = curProcess.getBurstTime();
+                    System.out.printf("@t=%d, P%d selected for %d units \n" , time, curProcess.getProcessNo(), bt);
+                    
+                    if (WaitingQueue.size() >= 1) {
+                        System.out.printf("@t=%d, context switch %d occurs \n", time, contextSwitchCount);
                     }
 
-                    else {
-
-                        time = time + remainingBurstTimes.get(i);
-                        Process thisProcess = new Process(time, remainingBurstTimes.get(i), i);
-                        finalProcesses.add(thisProcess);
-                        int curBurstTime = remainingBurstTimes.get(i);
-                        System.out.printf("@t=%d, P%d selected for %d units \n" , time, thisProcess.getProcessNo(), curBurstTime);
-
-                        if (i != copyProcessList.size() - 1) {
-                            System.out.printf("@t=%d, context switch %d occurs \n", time, contextSwitchCount); 
-                            contextSwitchCount ++;
-                        }
-                        copyProcessList.get(i).setFinishTime(time);
-                        remainingBurstTimes.set(i, 0);
-
-
+                    curProcess.setBurstTime(0);
+                    time += bt;
+                    contextSwitchCount++;
+                }
+                for (int i = 0; i < copyProcessList.size(); i++) {
+                    if (copyProcessList.get(i).getArrivalTime() <= time) {
+                        WaitingQueue.add(copyProcessList.get(i));
+                        copyProcessList.remove(copyProcessList.get(i));
                     }
                 }
             }
-                
-            if (done == true) {
+
+            if (copyProcessList.isEmpty()) {
                 break;
             }
 
         }
-
-        calculate(copyProcessList);
     }
 
     public static ArrayList<Process> sortByArrival(ArrayList<Process> list){
