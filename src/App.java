@@ -21,7 +21,7 @@ public class App {
 
         ArrayList<Process> sorted = sortByArrival(Processes);
 
-        app.RR();
+        app.randomAlgorithm();
 
     }
 
@@ -163,6 +163,8 @@ public class App {
         Process nextProcess;
         boolean found = false;
         ArrayList<Process> completed = new ArrayList<Process>();
+        ArrayList<Process> WaitingQueue = new ArrayList<Process>();
+
 
         for (Process p: Processes) {
             copyProcessList.add(p);
@@ -170,30 +172,55 @@ public class App {
 
         System.out.println();
 
-        while (copyProcessList.size() != 0) {
-
-            
-            int processIndex = rand.nextInt(copyProcessList.size());
-            curProcess = copyProcessList.get(processIndex);
-
-            randomList.add(copyProcessList.get(processIndex));
-            copyProcessList.remove(processIndex);
-
-            arrivalTime = curProcess.getArrivalTime();
-            procLength = curProcess.getBurstTime();
-
-            System.out.printf("@t=%d, P%d selected for %d units \n" , time, curProcess.getProcessNo(), procLength);
-            curProcess.setStartExecTime(time);
-            time += procLength;
-
-            if(copyProcessList.isEmpty()){
-                System.out.printf("Completed in %d seconds\n", time );
+        while (contextSwitchCount <= 5) {
+            for (Process p : copyProcessList) {
+                if (p.getArrivalTime() <= time) {
+                    WaitingQueue.add(p);
+                }
             }
-            else{
-                System.out.printf("@t=%d, context switch %d occurs \n", time, contextSwitchCount);
-            }
+
+            if (WaitingQueue.size() > 0) {
+                if (WaitingQueue.size() == 1) {
+                    curProcess = WaitingQueue.remove(0);
+                    copyProcessList.remove(0);
+                }
+                
+                else {
+                    int processIndex = rand.nextInt(WaitingQueue.size());
+                    curProcess = WaitingQueue.remove(processIndex);
+                    if (copyProcessList.size() == 1) {
+                        copyProcessList.remove(0);
+
+                    }
+                    else {
+                        copyProcessList.remove(processIndex);
+
+                    }
+
+                }
+                
+                randomList.add(curProcess);
+
+                arrivalTime = curProcess.getArrivalTime();
+                procLength = curProcess.getBurstTime();
+
+                System.out.printf("@t=%d, P%d selected for %d units \n" , time, curProcess.getProcessNo(), procLength);
+                curProcess.setStartExecTime(time);
+                time += procLength;
+
+                if(copyProcessList.isEmpty()){
+                    System.out.printf("Completed in %d seconds\n", time );
+                }
+                else{
+                    System.out.printf("@t=%d, context switch %d occurs \n", time, contextSwitchCount);
+                }
+                
             contextSwitchCount +=1;
-            time += latency;
+            }
+            else {
+                System.out.println("Waiting");
+            }
+            time++;
         }
 
         calculate(randomList);

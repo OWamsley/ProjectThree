@@ -1,5 +1,5 @@
 public class Process {
-
+ 
     private int arrivalTime;
     private int burstTime;
     private int startExecTime;
