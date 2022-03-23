@@ -17,11 +17,39 @@ public class App {
     public static void main(String[] args) throws Exception {
         App app = new App();
         app.getInputs();
+
+        System.out.println();
+        
         app.createProcesses();
 
         ArrayList<Process> sorted = sortByArrival(Processes);
+        System.out.println("First Come First Served");
+        System.out.println();
+        app.fcfs();
+
+        System.out.println();
+        System.out.println();
+
+        System.out.println("Shortest Job First");
+        System.out.println();
+
+        app.sjf();
+
+        System.out.println();
+        System.out.println();
+
+        System.out.println("Random");
+        System.out.println();
 
         app.randomAlgorithm();
+        System.out.println();
+
+        System.out.print("Round Robin");
+        System.out.println();
+
+        app.RR();
+        System.out.println();
+
 
     }
 
@@ -95,7 +123,7 @@ public class App {
             contextSwitchCount +=1;
             time += latency;
         }
-
+        calculate(completed);
         
     }
 
@@ -215,10 +243,7 @@ public class App {
                 
             contextSwitchCount +=1;
             }
-            else {
-                String waiting = "Waiting";
-                System.out.print(waiting);
-            }
+
             time++;
         }
 
@@ -298,7 +323,6 @@ public class App {
         }
         for (Process p : finalProcesses) {
             p.setStartLastBurst(p.getFinishTime());
-            System.out.println(p);
         }
         calculate(finalProcesses);
     }
@@ -373,7 +397,7 @@ public class App {
             waitTotal += i;
         }
         int waitCount = waitTimes.size();
-        avgResp = (float)respTotal / (float)respCount;
+        avgResp = (float)waitTotal / (float)respCount;
         waitString += String.format(") / %d = (%s) / %d = %d / %d = %4.2f", waitCount, secondWaitString, waitCount, waitTotal, waitCount, avgResp);
         System.out.println(waitString);
     }
