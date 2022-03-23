@@ -173,29 +173,27 @@ public class App {
         System.out.println();
 
         while (contextSwitchCount <= 5) {
-            for (Process p : copyProcessList) {
-                if (p.getArrivalTime() <= time) {
-                    WaitingQueue.add(p);
+            for (int i = 0; i < copyProcessList.size(); i++) {
+                if (copyProcessList.get(i).getArrivalTime() <= time) {
+                    WaitingQueue.add(copyProcessList.get(i));
+                    copyProcessList.remove(copyProcessList.get(i));
                 }
             }
 
             if (WaitingQueue.size() > 0) {
                 if (WaitingQueue.size() == 1) {
                     curProcess = WaitingQueue.remove(0);
-                    copyProcessList.remove(0);
+                    curProcess.setStartExecTime(time);
+                    curProcess.setFinishTime(time + curProcess.getBurstTime());
+                    //copyProcessList.remove(0);
                 }
                 
                 else {
                     int processIndex = rand.nextInt(WaitingQueue.size());
                     curProcess = WaitingQueue.remove(processIndex);
-                    if (copyProcessList.size() == 1) {
-                        copyProcessList.remove(0);
+                    curProcess.setStartExecTime(time);
+                    curProcess.setFinishTime(time + curProcess.getBurstTime());
 
-                    }
-                    else {
-                        copyProcessList.remove(processIndex);
-
-                    }
 
                 }
                 
@@ -218,7 +216,8 @@ public class App {
             contextSwitchCount +=1;
             }
             else {
-                System.out.println("Waiting");
+                String waiting = "Waiting";
+                System.out.print(waiting);
             }
             time++;
         }
