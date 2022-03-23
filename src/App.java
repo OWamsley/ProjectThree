@@ -324,6 +324,7 @@ public class App {
         for (Process p : finalProcesses) {
             p.setStartLastBurst(p.getFinishTime());
         }
+        System.out.printf("Completed in %d seconds\n", time );
         calculate(finalProcesses);
     }
 
@@ -389,6 +390,7 @@ public class App {
         }
         int respCount = respTimes.size();
         float avgResp = (float)respTotal / (float)respCount;
+        System.out.print("Avg resp time: ");
         respString += String.format(") / %d = (%s) / %d = %d / %d = %4.2f", respCount, secondRespString, respCount, respTotal, respCount, avgResp);
         System.out.println(respString);
 
@@ -398,6 +400,7 @@ public class App {
         }
         int waitCount = waitTimes.size();
         avgResp = (float)waitTotal / (float)respCount;
+        System.out.print("Avg wait time: ");
         waitString += String.format(") / %d = (%s) / %d = %d / %d = %4.2f", waitCount, secondWaitString, waitCount, waitTotal, waitCount, avgResp);
         System.out.println(waitString);
     }
